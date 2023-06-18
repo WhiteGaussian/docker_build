@@ -1,0 +1,37 @@
+if [ "$#" -eq 0 ]; then
+    args="/bin/bash"
+else
+    args="$@"
+fi
+
+if [ "$USER" == "root" ]; then
+    echo "Error: root user cannot use diagenv!"
+    exit 1
+fi
+
+if [ ! -d /ws-$USER ]; then
+    echo "Error: Workspace /ws-$USER doesn't exist!"
+    exit 1
+fi
+
+docker_image=diagenv:16.04
+name="$USER"_since_$(date +'%m%d%Y.%H%M%S')
+image_info=$(docker image ls $docker_image --format "{{.Repository}}({{.ID}})")
+
+docker run \
+    -v "/ws-$USER":"/ws-$USER" \
+    -v $HOME:$HOME \
+    -e DIAG_ENV="$image_info@`hostname`" \
+    -e LOCAL_USER_ID=`id -u` \
+    -e LOCAL_USER_NAME=`id -un` \
+    -e LOCAL_GROUP_ID=`id -g` \
+    -e LOCAL_GROUP_NAME=`id -gn` \
+    -w `pwd` \
+    --hostname="diagenv" \
+    --name="$name" \
+    --interactive=true \
+    --tty=true \
+    --init \
+    --rm \
+    $docker_image \
+    $args

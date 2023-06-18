@@ -1,0 +1,165 @@
+FROM debian:buster
+
+COPY ["public_key.gpg", "/etc/apt/trusted.gpg.d"]
+RUN echo "deb [arch=amd64] http://proxy.xinuolc.com/repository/debian-archive/ buster main contrib non-free" > /etc/apt/sources.list && \
+        echo "deb-src [arch=amd64] http://proxy.xinuolc.com/repository/debian-archive/ buster main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb [arch=amd64] http://proxy.xinuolc.com/repository/debian-security/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb-src [arch=amd64] http://proxy.xinuolc.com/repository/debian-security/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb [arch=amd64] http://proxy.xinuolc.com/repository/debian-archive buster-backports main" >> /etc/apt/sources.list && \
+        echo "deb [arch=amd64] http://proxy.xinuolc.com/repository/debian-packages/ buster main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb [arch=amd64] http://proxy.xinuolc.com/repository/debian-packages/ buster-updates main contrib non-free" >> /etc/apt/sources.list
+
+## Make apt-get non-interactive
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+        apt-utils \
+        default-jre-headless \
+        openssh-server \
+        curl \
+        wget \
+        unzip \
+        git \
+        build-essential \
+        libtool \
+        lintian \
+        sudo \
+        dh-make \
+        dh-exec \
+        kmod \
+        libtinyxml2-6a \
+        libtinyxml2-dev \
+        python \
+        python-pip \
+        python3 \
+        python3-pip \
+        libncurses5-dev \
+        texinfo \
+        dh-autoreconf \
+        doxygen \
+        devscripts \
+        git-buildpackage \
+        perl-modules \
+        libswitch-perl \
+        dh-systemd \
+        libzmq5 \
+        libzmq3-dev \
+        python3-stdeb\
+# For libnl3 (local) build
+        cdbs \
+# For linux build
+        bc \
+        fakeroot \
+        build-essential \
+        devscripts \
+        quilt \
+        stgit \
+# For platform-modules build
+        module-assistant \
+# For mellanox sdk build
+        libpcre3 \
+        libpcre3-dev \
+        byacc \
+        flex \
+        libglib2.0-dev \
+        bison \
+        expat \
+        libexpat1-dev \
+        dpatch \
+        libdb-dev \
+        iptables-dev \
+        ctags \
+# For mellanox sai build
+        libtool-bin \
+        libxml2-dev \
+# For BFN sdk build
+        libusb-1.0-0-dev \
+        libcurl3-nss-dev \
+        libunwind8-dev \
+        telnet \
+        libc-ares2 \
+        libgoogle-perftools4 \
+# For build image
+        cpio \
+        squashfs-tools \
+        zip \
+        zstd \
+# For broadcom sdk build
+        linux-compiler-gcc-8-x86 \
+# teamd build
+        libdaemon-dev \
+        libdbus-1-dev \
+        libjansson-dev \
+# For cavium sdk build
+        libpcap-dev \
+        dnsutils \
+        libusb-dev \
+# For debian image reconfiguration
+        augeas-tools \
+# For mft kernel module build
+        dkms \
+# For lldpd
+	debhelper \
+        autotools-dev \
+        libbsd-dev \
+        pkg-config \
+        check \
+# For sonic config engine testing
+        python-dev \
+# For lockfile
+        procmail \
+# For gtest
+        libgtest-dev \
+        cmake \
+# For pam_tacplus build
+        autoconf-archive \
+# For bash
+        texi2html \
+# For initramfs
+        shellcheck \
+        bash-completion \
+# For kdump-tools
+        liblzo2-dev \
+# For iptables
+        libnetfilter-conntrack-dev \
+        libnftnl-dev \
+        libgcc-8-dev
+
+
+# For linux build
+RUN apt-get -y build-dep linux
+
+# Install vim
+RUN apt-get install -y vim
+
+RUN wget http://proxy.xinuolc.com/repository/debian-archive/pool/main/l/linux/linux-kbuild-4.19_4.19.208-1_amd64.deb \
+      &&  dpkg -i linux-kbuild-4.19_4.19.208-1_amd64.deb && \
+      rm -rf linux-kbuild-4.19_4.19.208-1_amd64.deb
+
+RUN curl -O https://jenkins.xinuolc.com/job/sonic/job/xinuolc/job/regression/job/202012.ks/job/sonic-buildimage/lastSuccessfulBuild/artifact/target/debs/buster/linux-headers-4.19.0-12-2-amd64_4.19.152-1_amd64.deb
+RUN curl -O https://jenkins.xinuolc.com/job/sonic/job/xinuolc/job/regression/job/202012.ks/job/sonic-buildimage/lastSuccessfulBuild/artifact/target/debs/buster/linux-headers-4.19.0-12-2-common_4.19.152-1_all.deb
+RUN dpkg -i linux-headers-4.19.0-12-2-common_4.19.152-1_all.deb
+RUN dpkg -i linux-headers-4.19.0-12-2-amd64_4.19.152-1_amd64.deb
+
+
+RUN wget http://proxy.xinuolc.com/repository/debian-archive/pool/main/l/linux/linux-kbuild-5.10_5.10.28-1_amd64.deb \
+      &&  dpkg -i linux-kbuild-5.10_5.10.28-1_amd64.deb && \
+      rm -rf linux-kbuild-5.10_5.10.28-1_amd64.deb
+
+RUN curl -O https://jenkins.xinuolc.com/job/sonic/job/xinuolc/job/regression/job/202012.xinuolc/job/sonic-buildimage/lastSuccessfulBuild/artifact/target/debs/buster/linux-headers-5.10.0-6-amd64_5.10.28-1_amd64.deb
+RUN curl -O https://jenkins.xinuolc.com/job/sonic/job/xinuolc/job/regression/job/202012.xinuolc/job/sonic-buildimage/lastSuccessfulBuild/artifact/target/debs/buster/linux-headers-5.10.0-6-common_5.10.28-1_all.deb
+RUN dpkg -i linux-headers-5.10.0-6-common_5.10.28-1_all.deb
+RUN dpkg -i linux-headers-5.10.0-6-amd64_5.10.28-1_amd64.deb
+
+RUN curl -OL https://github.com/json-c/json-c/archive/refs/tags/json-c-0.16-20220414.tar.gz
+RUN tar zxf json-c-0.16-20220414.tar.gz
+
+WORKDIR /json-c-json-c-0.16-20220414
+RUN mkdir build
+WORKDIR /json-c-json-c-0.16-20220414/build
+RUN cmake ../
+RUN make
+RUN make install
+RUN ldconfig
+WORKDIR /
+

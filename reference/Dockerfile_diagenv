@@ -1,0 +1,101 @@
+FROM ubuntu:18.04
+
+RUN echo "https_proxy=\"https://proxy.esl.ocsic.com:80/\"" >> /etc/environment
+
+###
+# To run a 32-bit executable file on a 64-bit multi-architecture Ubuntu system
+RUN echo "foreign-architecture i386" > /etc/dpkg/dpkg.cfg.d/multiarch
+RUN apt-get update
+RUN apt-get install -y --fix-missing --no-install-recommends \
+                build-essential \
+                git \
+                g++ \
+                libc6:i386 \
+                libncurses5:i386 \
+                libpci3 \
+                libssl-dev \
+                libstdc++6:i386  \
+                lib32z1 \
+                rsync \
+                ssh \
+                pax \
+                python-yaml \
+                tcl-dev \
+                libpci-dev \
+                u-boot-tools \
+                python-setuptools \
+                locales \
+                libboost-regex1.48-dev \
+                python-dev \
+                libtool \
+                vim \
+                csh \
+                lsb-release
+
+################################################
+# install package for kernel(fakeroot)
+################################################
+RUN apt-get install -y --fix-missing --no-install-recommends \
+                libelf-dev \
+                kernel-package \
+                linux-source \
+                bc \
+                kernel-wedge \
+                fakeroot \
+                libdw-dev \
+                libnewt-dev \
+                libgtk2.0-dev \
+                libperl-dev \
+                binutils-dev \
+                asciidoc \
+                flex \
+                lzop \
+                genext2fs \
+                genromfs \
+                autoconf \
+                u-boot-tools \
+                automake \
+                cramfsprogs \
+                squashfs-tools \
+                xmlto \
+                bison
+
+copy git-fat-0.5.0.tar.gz /root/
+copy psutil.tar /root/
+copy swig-2.0.4.tar.gz /root/
+
+
+RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ENV LANG en_US.utf8
+
+#RUN apt-get install -y \
+#                openjdk-6-jdk \
+#                openssh-server
+
+#RUN ln -s /usr/lib/libtcl8.5.so.0 /usr/lib/libtcl.so
+RUN ln -s /usr/lib/libboost_regex.so.1.48.0 /usr/lib/libboost_regex.so.5
+RUN echo America/Los_Angeles |  tee /etc/timezone &&  dpkg-reconfigure --frontend noninteractive tzdata
+RUN cd /root && \
+    tar zxvf git-fat-0.5.0.tar.gz && \
+    cd git-fat-0.5.0 && \
+    python setup.py install
+RUN cd /root && \
+    tar xvf psutil.tar && \
+    cd psutil && \
+    python setup.py install
+RUN cd /root && \
+    tar zxvf swig-2.0.4.tar.gz && \
+    cd swig-2.0.4 && \
+    ./configure --without-pcre LDFLAGS=-static && \
+    make && \
+    make install
+
+# To run a 32-bit executable file on a 64-bit multi-architecture Ubuntu system
+#RUN apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1
+
+# set a null-string password for root user
+RUN sed -i -e 's/root:\*:/root:P0QBjKqFAoNi6:/g' /etc/shadow
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY gosu /bin/gosu
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
