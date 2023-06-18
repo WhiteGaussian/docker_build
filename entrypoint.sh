@@ -16,7 +16,10 @@ groupadd $GROUP_NAME -g $GROUP_ID
 useradd $USER_NAME --shell /bin/bash -u $USER_ID -o -c "" -g $GROUP_NAME --no-create-home  > /dev/null
 
 export HOME=/home/$USER_NAME
-
+if [ -d "$HOME/bin" ]; then
+    export PATH=$HOME/bin:$PATH
+fi
+ln -s /usr/bin/python3 /usr/bin/python
 # hook for operations which need root permission
 test -f ./hook.bash && source ./hook.bash
 

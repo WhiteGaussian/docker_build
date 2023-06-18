@@ -30,9 +30,10 @@ RUN apt-get update && apt-get install -y \
     libsdl1.2-dev \
     pylint3 \ 
     xterm
-#
+# Settings
 ENV LANG en_US.utf8
-RUN echo America/Los_Angeles |  tee /etc/timezone &&  dpkg-reconfigure --frontend noninteractive tzdata
+ARG DEBIAN_FRONTEND=noninteractive
+# RUN echo America/Los_Angeles |  tee /etc/timezone &&  dpkg-reconfigure --frontend noninteractive tzdata
 
 # Define the entry point
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh

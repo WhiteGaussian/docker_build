@@ -31,7 +31,7 @@ remove_docker_image(){
 }
 
 run_with_docker(){
-    args=$1
+    args="$@"
     docker run \
             -v $HOME:$HOME \
             -e WIFI_ENV="$IMAGE_INFO@`hostname`" \
@@ -47,7 +47,7 @@ run_with_docker(){
             --init \
             --rm \
             $DOCKER_IMAGE_NAME \
-            bash -c $args
+            bash -c "$args"
 }
 
 if [ "$#" -eq 0 ]; then
