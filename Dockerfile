@@ -38,5 +38,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Define the entry point
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY gosu /bin/gosu
+COPY repo_cmd /usr/local/bin/repo
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
