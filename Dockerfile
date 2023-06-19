@@ -29,9 +29,15 @@ RUN apt-get update && apt-get install -y \
     libegl1-mesa \
     libsdl1.2-dev \
     pylint3 \ 
-    xterm
+    xterm \
+    locales
 # Settings
-ENV LANG en_US.utf8
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8   
+
 ARG DEBIAN_FRONTEND=noninteractive
 # RUN echo America/Los_Angeles |  tee /etc/timezone &&  dpkg-reconfigure --frontend noninteractive tzdata
 
