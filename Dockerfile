@@ -62,10 +62,12 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 ## RUN echo America/Los_Angeles |  tee /etc/timezone &&  dpkg-reconfigure --frontend noninteractive tzdata
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Define the entry point
+# COPY the necessary files
+COPY repo_cmd /usr/local/bin/repo
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY gosu /bin/gosu
-COPY repo_cmd /usr/local/bin/repo
-RUN chmod +x /usr/local/bin/entrypoint.sh
+# Define the entry point
 RUN chmod +x /usr/local/bin/repo
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
