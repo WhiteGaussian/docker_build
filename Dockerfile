@@ -4,15 +4,13 @@ FROM ubuntu:18.04
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
+    make \
     gawk \
     wget \
     git-core \
     diffstat \
     unzip \
     texinfo \
-    gcc-multilib \
-    g++-multilib \
-    build-essential \
     chrpath \
     socat \
     bison \
@@ -30,7 +28,15 @@ RUN apt-get update && apt-get install -y \
     libsdl1.2-dev \
     pylint3 \ 
     xterm \
-    locales
+    locales \
+    cmake \
+    gcc-7-aarch64-linux-gnu \
+    gcc-aarch64-linux-gnu \
+    device-tree-compiler \
+    lib32stdc++6 libevent-dev libpulse-dev libsdl1.2-dev libstdc++6 ninja-build python3-pexpect rpm2cpio socat texinfo libdivsufsort-dev libbz2-dev \
+    uuid-dev clang-6.0 clang-format \
+    gettext libfile-slurp-perl libncurses-dev autoconf doxygen libtool automake libpcre3-dev libbz2-dev subversion minicom putty rpm python-pexpect \
+    python-svn python-argparse tofrodos meld dos2unix ruby transfig libglib2.0-dev xutils-dev autopoint python-dulwich python-dev cpio python-yaml swig
 # Install JAVA
 ## This is in accordance to : 
 ##     https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-get-on-ubuntu-16-04

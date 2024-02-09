@@ -16,7 +16,7 @@ export HOME=/home/$USER_NAME
 export JAVA_HOME
 
 # File setting
-ln -s /usr/bin/python3 /usr/bin/python
+# ln -s /usr/bin/python3 /usr/bin/python
 
 # hook for operations which need root permission
 test -f ./hook.bash && source ./hook.bash
