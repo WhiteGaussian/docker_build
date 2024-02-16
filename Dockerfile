@@ -26,10 +26,11 @@ RUN apt-get update && apt-get install -y \
     python3-jinja2 \
     libegl1-mesa \
     libsdl1.2-dev \
-    pylint3 \ 
+    pylint3 \
     xterm \
     locales \
     cmake \
+    rsync \
     gcc-7-aarch64-linux-gnu \
     gcc-aarch64-linux-gnu \
     device-tree-compiler \
@@ -38,7 +39,7 @@ RUN apt-get update && apt-get install -y \
     gettext libfile-slurp-perl libncurses-dev autoconf doxygen libtool automake libpcre3-dev libbz2-dev subversion minicom putty rpm python-pexpect \
     python-svn python-argparse tofrodos meld dos2unix ruby transfig libglib2.0-dev xutils-dev autopoint python-dulwich python-dev cpio python-yaml swig
 # Install JAVA
-## This is in accordance to : 
+## This is in accordance to :
 ##     https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-get-on-ubuntu-16-04
 RUN apt-get update && \
     apt-get install -y openjdk-8-jdk && \
@@ -47,7 +48,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/oracle-jdk8-installer;
 
-## Fix certificate issues, found as of 
+## Fix certificate issues, found as of
 ##     https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/983302
 RUN apt-get update && \
     apt-get install -y ca-certificates-java && \
@@ -59,9 +60,9 @@ RUN apt-get update && \
 # Settings
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8   
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 ## Setup JAVA_HOME, this is useful for docker commandline
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 
