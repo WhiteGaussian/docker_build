@@ -45,7 +45,9 @@ run_with_docker(){
             --interactive=true \
             --tty=true \
             --init \
-	    --rm \
+            --rm \
+            --dns 8.8.8.8 \
+            --dns 8.8.4.4 \
             $DOCKER_IMAGE_NAME \
             /bin/bash -c "$args"
 }
@@ -70,7 +72,7 @@ case "$1" in
     remove)
         remove_docker_image
         ;;
-    *) 
+    *)
         run_with_docker $args
         ;;
 esac
