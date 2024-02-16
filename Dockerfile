@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y \
     gcc-7-aarch64-linux-gnu \
     gcc-aarch64-linux-gnu \
     device-tree-compiler \
+    python3-subunit mesa-common-dev zstd liblz4-tool file libacl1 \
     lib32stdc++6 libevent-dev libpulse-dev libsdl1.2-dev libstdc++6 ninja-build python3-pexpect rpm2cpio socat texinfo libdivsufsort-dev libbz2-dev \
     uuid-dev clang-6.0 clang-format \
     gettext libfile-slurp-perl libncurses-dev autoconf doxygen libtool automake libpcre3-dev libbz2-dev subversion minicom putty rpm python-pexpect \
