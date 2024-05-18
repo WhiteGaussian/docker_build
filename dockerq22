@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+USER=`whoami`
+USER_ID=`id -u ${USER}`
+USER_GROUP=`id -g ${USER}`
+DOCKERFILE_PATH=./
+#DOCKER_TAG=`cat ${DOCKERFILE_PATH}Dockerfile | sha1sum | awk '{print substr($1,0,11);}'`
+DOCKER_TAG=22.04
+WORKING_DIR=`pwd`
+DOCKER_NAME_BASE=dockerq22
+DOCKER_IMAGE_NAME="$DOCKER_NAME_BASE":"$DOCKER_TAG"
+CONTAINER_NAME="$DOCKER_NAME_BASE"-"$USER"-since_$(date +'%m%d%Y.%H%M%S')
+IMAGE_INFO=$(docker image ls $DOCKER_IMAGE_NAME --format "{{.Repository}}({{.ID}})")
+
+show_usage(){
+    echo "Usage: $DOCKER_NAME_BASE [build|EXEC_CMD]"
+}
+
+create_new_docker_image(){
+    echo "Create User Docker $DOCKER_IMAGE_NAME"
+    docker build --no-cache -t $DOCKER_IMAGE_NAME $DOCKERFILE_PATH
+}
+
+build_docker_image(){
+    echo "Build docker $DOCKER_IMAGE_NAME"
+    docker inspect --type image $DOCKER_IMAGE_NAME &> /dev/null || create_new_docker_image
+}
+
+remove_docker_image(){
+    echo "Remove docker $DOCKER_IMAGE_NAME"
+    docker inspect --type image $DOCKER_IMAGE_NAME &> /dev/null && docker rmi -f $DOCKER_IMAGE_NAME
+}
+
+run_with_docker(){
+    args="$@"
+    docker run \
+            -v $HOME:$HOME \
+            -e WIFI_ENV="$IMAGE_INFO@`hostname`" \
+            -e LOCAL_USER_ID=`id -u` \
+            -e LOCAL_USER_NAME=`id -un` \
+            -e LOCAL_GROUP_ID=`id -g` \
+            -e LOCAL_GROUP_NAME=`id -gn` \
+            -w `pwd` \
+            --hostname=$DOCKER_NAME_BASE \
+            --name $CONTAINER_NAME \
+            --interactive=true \
+            --tty=true \
+            --init \
+            --rm \
+            --dns 8.8.8.8 \
+            --dns 8.8.4.4 \
+            $DOCKER_IMAGE_NAME \
+            /bin/bash -c "$args"
+}
+
+run_with_bash(){
+    args="$@"
+    docker run \
+            -v $HOME:$HOME \
+            -e WIFI_ENV="$IMAGE_INFO@`hostname`" \
+            -e LOCAL_USER_ID=`id -u` \
+            -e LOCAL_USER_NAME=`id -un` \
+            -e LOCAL_GROUP_ID=`id -g` \
+            -e LOCAL_GROUP_NAME=`id -gn` \
+            -w `pwd` \
+            --hostname=$DOCKER_NAME_BASE \
+            --name $CONTAINER_NAME \
+            -it \
+            --tty=true \
+            --init \
+            --rm \
+            --dns 8.8.8.8 \
+            --dns 8.8.4.4 \
+            $DOCKER_IMAGE_NAME \
+            /bin/bash
+}
+
+if [ "$#" -eq 0 ]; then
+    show_usage
+    exit 1
+else
+    args="$@"
+fi
+
+if [ "$USER" == "root" ]; then
+    echo "Error: root user cannot use $CONTAINER_NAME"
+    exit 1
+fi
+
+
+case "$1" in
+    bash)
+       run_with_bash
+       ;;
+    build)
+        build_docker_image
+        ;;
+    remove)
+        remove_docker_image
+        ;;
+    *)
+        run_with_docker $args
+        ;;
+esac
